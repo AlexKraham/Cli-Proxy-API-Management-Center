@@ -121,6 +121,9 @@
 
 .sort {
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   min-width: 148px;
   max-width: 100%;
 
@@ -216,5 +219,32 @@
 @include mobile {
   .page {
     gap: 16px;
+  }
+}
+
+/* Ledger: show or mask credential emails. Same height as the Selects beside it. */
+.toggle {
+  @include button-reset;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover,
+  &[aria-pressed='true'] {
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
   }
 }

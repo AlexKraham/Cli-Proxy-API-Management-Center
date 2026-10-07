@@ -1,0 +1,362 @@
+@use '../../../styles/mixins' as *;
+
+/* ============================================================
+ * Ledger view: provider summary strip + grouped credential rows.
+ * Colours come from theme tokens only; the three meter levels use the
+ * same tokens as QuotaBody's bars (success / medium / failure).
+ * ============================================================ */
+
+/* ---------- meter levels (summary segments and row meters) ---------- */
+
+.levelHigh {
+  background: var(--viz-success);
+}
+
+.levelMedium {
+  background: var(--quota-medium-color);
+}
+
+.levelLow {
+  background: var(--viz-failure);
+}
+
+.levelUnknown {
+  background: transparent;
+}
+
+.providerIcon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.resetRelative {
+  color: var(--text-secondary);
+}
+
+.resetAbsolute {
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- summary strip ---------- */
+
+.summaryStrip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  border: 1px solid var(--border-color);
+  border-radius: $radius-lg;
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+.summaryCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 18px 20px;
+  border-right: 1px solid var(--border-color);
+
+  &:last-child {
+    border-right: 0;
+  }
+}
+
+.summaryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.providerName {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.summaryCount {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.summaryLabel {
+  font-size: 13px;
+  color: var(--text-secondary);
+  @include text-ellipsis;
+}
+
+.summaryFigure {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.summaryValue {
+  font-size: 28px;
+  font-weight: 650;
+  line-height: 1.1;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.summaryCapacity {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+/* One slot per credential; each slot fills to that credential's remaining. */
+.segments {
+  display: flex;
+  gap: 4px;
+  height: 6px;
+}
+
+.segment {
+  flex: 1 1 0;
+  min-width: 6px;
+  border-radius: $radius-full;
+  background: color-mix(in srgb, var(--text-primary) 8%, transparent);
+  overflow: hidden;
+}
+
+.segmentFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 360ms var(--ease-out-strong, ease);
+}
+
+.summaryReset,
+.meterReset {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 12px;
+
+  .resetRelative + .resetAbsolute::before {
+    content: '·';
+    margin-right: 6px;
+    color: var(--text-quaternary);
+  }
+}
+
+.summaryEmpty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.summarySecondary {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-color);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.summarySecondaryValue {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- grouped rows ---------- */
+
+.ledger {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.groupTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.groupCount {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border-color);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(160px, 220px) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px 24px;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--border-color);
+
+  @include tablet {
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    > :nth-child(2) {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.identityName {
+  font-family: $font-mono;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  @include text-ellipsis;
+}
+
+.identityPlan {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* --ledger-columns comes from the group, so every row shares its columns. */
+.meters {
+  display: grid;
+  grid-template-columns: repeat(var(--ledger-columns, 3), minmax(120px, 1fr));
+  gap: 12px 20px;
+  min-width: 0;
+
+  @include mobile {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+}
+
+.meter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.meterHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.meterLabel {
+  color: var(--text-secondary);
+  @include text-ellipsis;
+}
+
+.meterValue {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.meterTrack {
+  height: 5px;
+  border-radius: $radius-full;
+  background: color-mix(in srgb, var(--text-primary) 8%, transparent);
+  overflow: hidden;
+}
+
+.meterFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 360ms var(--ease-out-strong, ease);
+}
+
+.rowMessage {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-tertiary);
+
+  &[role='alert'] {
+    color: var(--error-color);
+  }
+}
+
+.rowAction {
+  @include button-reset;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: $radius-md;
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background $transition-fast,
+    color $transition-fast;
+
+  &:hover:not(:disabled) {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+}
+
+.spinning {
+  animation: ledger-spin 0.8s linear infinite;
+}
+
+@keyframes ledger-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .segmentFill,
+  .meterFill {
+    transition: none;
+  }
+
+  .spinning {
+    animation: none;
+  }
+}
